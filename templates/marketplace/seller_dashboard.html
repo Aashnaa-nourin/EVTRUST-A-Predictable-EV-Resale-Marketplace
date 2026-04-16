@@ -1,0 +1,427 @@
+{% extends 'marketplace/base.html' %}
+{% load static %}
+
+{% block title %}Seller Dashboard — EVTrust{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 36px;
+    }
+
+    .page-header-left .eyebrow {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #2563eb;
+        margin-bottom: 6px;
+    }
+
+    .page-header-left h1 {
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.5px;
+        margin: 0;
+    }
+
+    .page-header-left p {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin: 6px 0 0;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 32px;
+        border: 1px solid var(--slate-100);
+        transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 3px;
+        background: var(--accent-color, #2563eb);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 32px -8px rgba(0,0,0,0.08);
+    }
+
+    .stat-value {
+        font-size: 2.4rem;
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+
+    .stat-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+    }
+
+    .stat-icon {
+        position: absolute;
+        top: 24px; right: 24px;
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+    }
+
+    .content-card {
+        background: white;
+        border-radius: var(--border-radius-lg);
+        border: 1px solid var(--slate-100);
+        padding: 40px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .content-card h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #f8fafc;
+    }
+
+    .quick-action-tile {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid #f1f5f9;
+        text-align: center;
+        transition: all 0.25s ease;
+    }
+
+    .quick-action-tile:hover {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+        transform: translateY(-2px);
+    }
+
+    .quick-action-tile .icon {
+        font-size: 1.8rem;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .quick-action-tile h6 {
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: #1e293b;
+        margin-bottom: 6px;
+    }
+
+    .quick-action-tile p {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 16px;
+    }
+
+    /* Profile Sidebar */
+    .profile-sidebar {
+        background: white;
+        border-radius: var(--border-radius-lg);
+        border: 1px solid var(--slate-100);
+        padding: 40px 28px;
+        position: sticky;
+        top: 104px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .profile-avatar {
+        width: 72px; height: 72px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #2563eb, #06b6d4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: white;
+        margin: 0 auto 20px;
+        box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+    }
+
+    .profile-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #0f172a;
+        text-align: center;
+        margin-bottom: 4px;
+    }
+
+    .profile-role-badge {
+        display: inline-block;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 4px 14px;
+        border-radius: 50px;
+        text-align: center;
+        width: 100%;
+        margin-bottom: 24px;
+    }
+
+    .profile-info-row {
+        padding: 12px 0;
+        border-bottom: 1px solid #f8fafc;
+    }
+
+    .profile-info-row:last-of-type { border: none; }
+
+    .profile-info-row .info-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 3px;
+    }
+
+    .profile-info-row .info-value {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #1e293b;
+        word-break: break-all;
+    }
+
+    .unread-indicator {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #ef4444;
+        color: white;
+        width: 20px; height: 20px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        margin-left: 8px;
+        animation: pulse-badge 2s infinite;
+    }
+
+    @keyframes pulse-badge {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+        50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+    }
+</style>
+
+<div class="row g-4">
+    <!-- Main Content -->
+    <div class="col-lg-9">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-left">
+                <div class="eyebrow">Seller Portal</div>
+                <h1>Dashboard</h1>
+                <p>Track your listings, messages, and marketplace performance.</p>
+            </div>
+            <div class="d-flex gap-2 mt-2">
+                <a href="{% url 'seller_inbox' %}" class="btn btn-light border fw-semibold d-flex align-items-center gap-2">
+                    <i class="bi bi-envelope"></i> Messages
+                    {% if unread_messages_count > 0 %}
+                        <span class="unread-indicator">{{ unread_messages_count }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'add_ev' %}" class="btn btn-primary d-flex align-items-center gap-2">
+                    <i class="bi bi-plus-lg"></i> Add EV Listing
+                </a>
+            </div>
+        </div>
+
+        <!-- Metrics Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card" style="--accent-color: #2563eb;">
+                    <div class="stat-icon" style="background: #eff6ff; color: #2563eb;">
+                        <i class="bi bi-collection"></i>
+                    </div>
+                    <div class="stat-label">Total Listings</div>
+                    <div class="stat-value" style="color: #2563eb;">{{ total_listings }}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card" style="--accent-color: #f59e0b;">
+                    <div class="stat-icon" style="background: #fffbeb; color: #f59e0b;">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div class="stat-label">Pending Approval</div>
+                    <div class="stat-value" style="color: #f59e0b;">{{ pending_listings }}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card" style="--accent-color: #10b981;">
+                    <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stat-label">Live & Active</div>
+                    <div class="stat-value" style="color: #10b981;">{{ approved_listings }}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card" style="--accent-color: #8b5cf6;">
+                    <div class="stat-icon" style="background: #f5f3ff; color: #8b5cf6;">
+                        <i class="bi bi-bag-check"></i>
+                    </div>
+                    <div class="stat-label">Successful Sales</div>
+                    <div class="stat-value" style="color: #8b5cf6;">{{ sold_listings }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="content-card">
+            <h4><i class="bi bi-lightning-charge me-2 text-primary"></i>Quick Actions</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="quick-action-tile">
+                        <span class="icon">📋</span>
+                        <h6>Manage Inventory</h6>
+                        <p>Edit, update, or remove your existing EV listings to keep your storefront current.</p>
+                        <a href="{% url 'seller_ev_list' %}" class="btn btn-outline-primary btn-sm w-100 fw-semibold rounded-pill">
+                            View Inventory
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="quick-action-tile">
+                        <span class="icon">🔬</span>
+                        <h6>Upload Battery Data</h6>
+                        <p>Upload telemetry CSV files to activate AI battery health verification for your listings.</p>
+                        <a href="{% url 'seller_ev_list' %}" class="btn btn-outline-info btn-sm w-100 fw-semibold rounded-pill">
+                            Upload Diagnostics
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase Requests Panel -->
+        {% if purchase_requests %}
+        <div class="content-card mt-4">
+            <h4><i class="bi bi-bag-check me-2 text-success"></i>Incoming Purchase Requests</h4>
+            <div class="d-flex flex-column gap-3">
+                {% for req in purchase_requests %}
+                <div class="p-4 rounded-4 border" style="background: #f8fafc;">
+                    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+                        <div>
+                            <div class="fw-700 mb-1" style="font-size: 0.95rem; font-weight: 700; color: #0f172a;">
+                                {{ req.buyer.name }}
+                            </div>
+                            <div class="text-muted small mb-2">
+                                <i class="bi bi-car-front me-1"></i>{{ req.listing.manufacturer }} {{ req.listing.vehicle_model }} ({{ req.listing.year }})
+                            </div>
+                            <div class="text-muted small">
+                                <i class="bi bi-clock me-1"></i>{{ req.created_at|date:"M d, Y" }} at {{ req.created_at|time:"H:i" }}
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column align-items-end gap-2">
+                            {% if req.request_status == 'submitted' %}
+                                <span class="badge" style="background: #fffbeb; color: #92400e; border: 1px solid #fde68a; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px;">
+                                    <i class="bi bi-hourglass-split me-1"></i>Awaiting Your Response
+                                </span>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'seller_confirm_sale' req.id %}" class="btn btn-success btn-sm fw-bold rounded-pill px-3">
+                                        <i class="bi bi-check-circle me-1"></i>Confirm Sale
+                                    </a>
+                                    <a href="{% url 'seller_reject_sale' req.id %}" class="btn btn-outline-danger btn-sm fw-bold rounded-pill px-3">
+                                        <i class="bi bi-x-circle me-1"></i>Reject
+                                    </a>
+                                </div>
+                            {% elif req.request_status == 'seller_confirmed' %}
+                                <span class="badge" style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px;">
+                                    <i class="bi bi-check-circle-fill me-1"></i>You Confirmed — Pending Admin
+                                </span>
+                            {% elif req.request_status == 'admin_review' %}
+                                <span class="badge" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px;">
+                                    <i class="bi bi-shield-check me-1"></i>Under Admin Review
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Completed Sales Panel -->
+        {% if confirmed_sales %}
+        <div class="content-card mt-4 border-primary border shadow-sm">
+            <h4><i class="bi bi-award me-2 text-primary"></i>Sale History & Ledger</h4>
+            <div class="d-flex flex-column gap-3">
+                {% for req in confirmed_sales %}
+                <div class="p-3 rounded-4 border" style="background: white;">
+                    <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                        <div>
+                            <div class="fw-700 mb-1" style="color: #0f172a; font-weight: 700;">{{ req.listing.display_name }} ({{ req.listing.year }})</div>
+                            <div class="text-muted small">Sold to: {{ req.buyer.name }} on {{ req.created_at|date:"M d, Y" }}</div>
+                        </div>
+                        <div class="fw-bold" style="color: #10b981; font-size: 1.1rem;">₹{{ req.listing.price|floatformat:0 }}</div>
+                        <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.75rem; padding: 6px 12px; border-radius: 8px;">
+                            <i class="bi bi-check-all me-1"></i>Sale Finalized
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Profile Sidebar -->
+    <div class="col-lg-3">
+        <div class="profile-sidebar">
+            <div class="text-center">
+                <div class="profile-avatar">
+                    {{ request.user.name|slice:":1"|upper }}
+                </div>
+                <div class="profile-name">{{ request.user.name }}</div>
+            </div>
+
+            <div class="profile-info-row">
+                <div class="info-label">Email Address</div>
+                <div class="info-value">{{ request.user.email }}</div>
+            </div>
+            <div class="profile-info-row">
+                <div class="info-label">Phone</div>
+                <div class="info-value">{{ request.user.phone|default:"Not configured" }}</div>
+            </div>
+
+            <div class="mt-4 d-grid gap-2">
+                <a href="{% url 'edit_profile' %}" class="btn btn-light border fw-semibold btn-sm">
+                    <i class="bi bi-pencil me-1"></i>Edit Profile
+                </a>
+                <div class="p-3 rounded-4 text-center" style="background: #f8fafc; border: 1px solid #f1f5f9;">
+                    <p class="small text-muted mb-0" style="font-size: 0.8rem;">
+                        Need assistance? <br>
+                        <a href="{% url 'contact_admin' %}" class="text-primary fw-semibold text-decoration-none">Contact Support</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

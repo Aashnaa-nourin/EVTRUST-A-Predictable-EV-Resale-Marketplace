@@ -1,0 +1,122 @@
+[
+  {
+    "idx": 0,
+    "name": "Sense_current__real",
+    "min": 796.18219,
+    "max": 943.964233
+  },
+  {
+    "idx": 1,
+    "name": "Sense_current__imag",
+    "min": -104.034973,
+    "max": 478.734924
+  },
+  {
+    "idx": 2,
+    "name": "Sense_current__abs",
+    "min": 862.002023,
+    "max": 945.698652
+  },
+  {
+    "idx": 3,
+    "name": "Sense_current__phase",
+    "min": -0.112643,
+    "max": 0.541366
+  },
+  {
+    "idx": 4,
+    "name": "Battery_current__real",
+    "min": 87.963074,
+    "max": 302.95459
+  },
+  {
+    "idx": 5,
+    "name": "Battery_current__imag",
+    "min": -64.925949,
+    "max": 131.159515
+  },
+  {
+    "idx": 6,
+    "name": "Battery_current__abs",
+    "min": 157.925048,
+    "max": 303.021504
+  },
+  {
+    "idx": 7,
+    "name": "Battery_current__phase",
+    "min": -0.247771,
+    "max": 0.980036
+  },
+  {
+    "idx": 8,
+    "name": "Current_ratio__real",
+    "min": 2.844689,
+    "max": 5.325724
+  },
+  {
+    "idx": 9,
+    "name": "Current_ratio__imag",
+    "min": -2.4986,
+    "max": 0.634894
+  },
+  {
+    "idx": 10,
+    "name": "Current_ratio__abs",
+    "min": 2.844689,
+    "max": 5.882715
+  },
+  {
+    "idx": 11,
+    "name": "Current_ratio__phase",
+    "min": -0.475756,
+    "max": 0.187419
+  },
+  {
+    "idx": 12,
+    "name": "Battery_impedance__real",
+    "min": 0.016768,
+    "max": 0.424707
+  },
+  {
+    "idx": 13,
+    "name": "Battery_impedance__imag",
+    "min": -0.117605,
+    "max": 0.016012
+  },
+  {
+    "idx": 14,
+    "name": "Battery_impedance__abs",
+    "min": 0.04874,
+    "max": 0.425106
+  },
+  {
+    "idx": 15,
+    "name": "Battery_impedance__phase",
+    "min": -1.219599,
+    "max": 0.063211
+  },
+  {
+    "idx": 16,
+    "name": "Rectified_Impedance__real",
+    "min": NaN,
+    "max": NaN
+  },
+  {
+    "idx": 17,
+    "name": "Rectified_Impedance__imag",
+    "min": -0.00745,
+    "max": 0.001784
+  },
+  {
+    "idx": 18,
+    "name": "Rectified_Impedance__abs",
+    "min": NaN,
+    "max": NaN
+  },
+  {
+    "idx": 19,
+    "name": "Rectified_Impedance__phase",
+    "min": NaN,
+    "max": NaN
+  }
+]

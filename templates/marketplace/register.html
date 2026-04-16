@@ -1,0 +1,269 @@
+{% extends 'marketplace/base.html' %}
+
+{% block title %}Create Account — EVTrust{% endblock %}
+
+{% block content %}
+<style>
+    .auth-container {
+        max-width: 1040px;
+        background: white;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: 0 40px 100px -20px rgba(0,0,0,0.15);
+        display: flex;
+        margin: 24px auto;
+        border: 1px solid var(--slate-100);
+    }
+
+    /* ---- LEFT: Form Side ---- */
+    .auth-form-side {
+        flex: 1.2;
+        padding: 60px 56px;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .auth-form-side .eyebrow {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #10b981;
+        margin-bottom: 12px;
+    }
+
+    .auth-form-title {
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -1px;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .auth-form-sub {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin-bottom: 36px;
+    }
+
+    .field-label {
+        display: block;
+        font-weight: 700;
+        font-size: 0.72rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 8px;
+    }
+
+    .btn-register {
+        width: 100%;
+        padding: 15px;
+        font-weight: 800;
+        font-size: 0.97rem;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #059669, #10b981);
+        border: none;
+        color: white;
+        margin-top: 24px;
+        transition: all 0.3s;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(5,150,105,0.4);
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #cbd5e1;
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin: 24px 0;
+    }
+
+    .divider::before, .divider::after {
+        content: ''; flex: 1; height: 1px; background: #f1f5f9;
+    }
+
+    /* ---- RIGHT: Visual Side ---- */
+    .auth-visual {
+        flex: 1;
+        background: linear-gradient(165deg, #065f46 0%, #059669 40%, #10b981 100%);
+        color: white;
+        padding: 80px 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-visual::before {
+        content: '';
+        position: absolute;
+        top: -80px; right: -80px;
+        width: 280px; height: 280px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 50%;
+    }
+
+    .auth-visual::after {
+        content: '';
+        position: absolute;
+        bottom: -100px; left: -60px;
+        width: 320px; height: 320px;
+        background: rgba(255,255,255,0.04);
+        border-radius: 50%;
+    }
+
+    .auth-brand {
+        font-size: 1.6rem;
+        font-weight: 900;
+        letter-spacing: -1px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-brand span { color: rgba(255,255,255,0.65); }
+
+    .auth-visual-body {
+        position: relative;
+        z-index: 1;
+    }
+
+    .auth-visual-body h2 {
+        font-size: 2.1rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        line-height: 1.2;
+        margin-bottom: 16px;
+    }
+
+    .auth-visual-body p {
+        font-size: 0.9rem;
+        opacity: 0.65;
+        margin-bottom: 36px;
+        line-height: 1.65;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 20px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 16px;
+        backdrop-filter: blur(8px);
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
+        transition: transform 0.3s ease;
+    }
+    .feature-item:hover { transform: translateX(8px); background: rgba(255,255,255,0.12); }
+
+    .feature-item .feat-icon {
+        width: 34px; height: 34px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+
+    .auth-visual-footer {
+        font-size: 0.75rem;
+        opacity: 0.35;
+        position: relative;
+        z-index: 1;
+    }
+
+    @media (max-width: 992px) {
+        .auth-visual { display: none; }
+        .auth-container { max-width: 500px; }
+        .auth-form-side { padding: 48px 36px; }
+    }
+</style>
+
+<div class="auth-container animate__animated animate__fadeIn">
+
+    <!-- LEFT: Form Side -->
+    <div class="auth-form-side">
+        <p class="eyebrow">New Account</p>
+        <h1 class="auth-form-title">Create Account.</h1>
+        <p class="auth-form-sub">Join EVTrust and get full access to our AI-verified EV marketplace.</p>
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger mb-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="text-muted d-block mt-1" style="font-size: 0.78rem;">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div style="color: #ef4444; font-size: 0.8rem; margin-top: 4px; font-weight: 600;">
+                            <i class="bi bi-x-circle me-1"></i>{{ field.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-register">
+                <i class="bi bi-person-plus me-2"></i>Create My Account →
+            </button>
+        </form>
+
+        <div class="divider">OR</div>
+
+        <div class="text-center">
+            <p class="text-muted small mb-1">Already a member?</p>
+            <a href="{% url 'login' %}" class="fw-bold text-decoration-none" style="color: #10b981;">
+                Sign in to EVTrust →
+            </a>
+        </div>
+    </div>
+
+    <!-- RIGHT: Visual Side -->
+    <div class="auth-visual">
+        <div class="auth-brand"><span>EV</span>Trust</div>
+
+        <div class="auth-visual-body">
+            <h2>Start Your <br><span style="color: #a7f3d0;">EV Journey.</span></h2>
+            <p>Join thousands of verified buyers and sellers in the world's most trusted EV marketplace.</p>
+            <div class="feature-item">
+                <div class="feat-icon"><i class="bi bi-cpu"></i></div>
+                <span>AI Battery Health Predictions</span>
+            </div>
+            <div class="feature-item">
+                <div class="feat-icon"><i class="bi bi-shield-check"></i></div>
+                <span>Zero-Trust Listing Verification</span>
+            </div>
+            <div class="feature-item">
+                <div class="feat-icon"><i class="bi bi-bag-check"></i></div>
+                <span>Secure Purchase Module</span>
+            </div>
+        </div>
+
+        <p class="auth-visual-footer">© 2025 EVTrust · Marketplace Platform</p>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+User Audit Log:
+ID: 1 | Email: user1@gmail.com | Staff: False | Super: False
+ID: 2 | Email: user2@gmail.com | Staff: False | Super: False
+ID: 3 | Email: admin | Staff: True | Super: True
+ID: 4 | Email: admin@gmail.com | Staff: True | Super: True
+ID: 5 | Email: useer3@gmail.com | Staff: False | Super: False
+ID: 6 | Email: user3@gmail.com | Staff: False | Super: False
+ID: 7 | Email: user4@gmail.com | Staff: False | Super: False
+ID: 8 | Email: user5@gmail.com | Staff: False | Super: False
+ID: 9 | Email: user6@gmail.com | Staff: False | Super: False
+ID: 10 | Email: buyer@test.com | Staff: False | Super: False
+ID: 11 | Email: seller@test.com | Staff: False | Super: False
+ID: 12 | Email: user8@gmail.com | Staff: False | Super: False
+ID: 13 | Email: ashna121@gmail.com | Staff: False | Super: False
+ID: 14 | Email: ashna9459@gmail.com | Staff: False | Super: False

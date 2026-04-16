@@ -1,0 +1,69 @@
+{% extends 'marketplace/base.html' %}
+
+{% block content %}
+<style>
+    .upload-container {
+        max-width: 650px;
+        margin: 50px auto;
+        background: white;
+        padding: 50px;
+        border-radius: 32px;
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05);
+        border: 1px solid #f1f5f9;
+        position: relative;
+    }
+    .upload-box {
+        border: 2px dashed #e2e8f0;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        background: #f8fafc;
+        transition: all 0.3s;
+    }
+    .upload-box:hover {
+        border-color: #3b82f6;
+        background: #eff6ff;
+    }
+    .upload-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .upload-header h2 {
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        color: #0f172a;
+    }
+</style>
+
+<div class="animate__animated animate__fadeIn">
+    <div class="upload-container">
+        <div class="upload-header">
+            <span class="text-primary fw-bold small text-uppercase ls-1">Diagnostic Engine</span>
+            <h2 class="mt-2 text-slate-900">Upload Battery Data</h2>
+            <p class="text-muted mt-2">Transmitting telemetry for <strong>{{ ev.display_name }}</strong></p>
+        </div>
+
+        <div class="mb-5 text-center px-4">
+            <p class="text-slate-500 small" style="line-height:1.6;">Our AI-ready verification engine requires historical battery telemetry (CSV format) to accurately predict State of Health (SOH) and Remaining Useful Life (RUL).</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="upload-box mb-4">
+                <div class="mb-3 text-slate-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-cloud-arrow-up-fill" viewBox="0 0 16 16">
+                        <path d="M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2zm2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l1.5-1.5a.5.5 0 0 1 .708 0l1.5 1.5z"/>
+                    </svg>
+                </div>
+                {{ form.csv_file }}
+                <p class="small text-muted mt-3 mb-0">Drag and drop your telemetry file or click to browse.</p>
+            </div>
+
+            <div class="d-grid gap-3 mt-5">
+                <button type="submit" class="btn btn-primary py-3 fw-bold shadow-sm">Initialize Data Upload</button>
+                <a href="{% url 'seller_ev_list' %}" class="btn btn-light py-3 fw-bold text-muted border">Cancel Transmission</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

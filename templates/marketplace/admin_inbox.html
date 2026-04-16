@@ -1,0 +1,205 @@
+{% extends 'marketplace/base.html' %}
+
+{% block title %}Admin Inbox — EVTrust{% endblock %}
+
+{% block content %}
+<style>
+    .inbox-shell {
+        max-width: 820px;
+        margin: 0 auto;
+    }
+
+    .inbox-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 32px;
+    }
+
+    .inbox-header .eyebrow {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #38bdf8;
+        margin-bottom: 4px;
+    }
+
+    .inbox-header h1 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.5px;
+        margin: 0;
+    }
+
+    .msg-thread {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+        transition: all 0.25s ease;
+        margin-bottom: 16px;
+    }
+
+    .msg-thread:hover {
+        box-shadow: 0 8px 24px -8px rgba(0,0,0,0.1);
+        border-color: #e2e8f0;
+        transform: translateY(-2px);
+    }
+
+    .msg-thread.unread {
+        border-left: 4px solid #38bdf8;
+    }
+
+    .msg-thread-inner {
+        padding: 24px 28px;
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .sender-avatar {
+        width: 48px; height: 48px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #475569, #1e293b);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .msg-content { flex: 1; }
+
+    .msg-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 4px;
+    }
+
+    .sender-name {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #0f172a;
+    }
+
+    .msg-subject {
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+
+    .msg-subject strong { color: #64748b; }
+
+    .msg-timestamp {
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .msg-timestamp .date {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #94a3b8;
+        display: block;
+    }
+
+    .msg-timestamp .time {
+        font-size: 0.75rem;
+        color: #cbd5e1;
+    }
+
+    .msg-body {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: 0.92rem;
+        color: #334155;
+        line-height: 1.65;
+        margin: 14px 0 18px;
+        border: 1px solid #f1f5f9;
+        white-space: pre-line;
+    }
+
+    .msg-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .empty-inbox {
+        background: white;
+        border-radius: 22px;
+        border: 1px solid #f1f5f9;
+        padding: 80px 40px;
+        text-align: center;
+    }
+
+    .empty-inbox i { font-size: 3rem; color: #e2e8f0; display: block; margin-bottom: 16px; }
+    .empty-inbox h4 { font-weight: 700; color: #94a3b8; margin-bottom: 8px; }
+    .empty-inbox p { color: #cbd5e1; font-size: 0.9rem; }
+    
+    .btn-admin-reply {
+        background: #1e293b;
+        color: white;
+        border: none;
+        transition: background 0.2s;
+    }
+    
+    .btn-admin-reply:hover {
+        background: #0f172a;
+        color: white;
+    }
+</style>
+
+<div class="inbox-shell">
+    <div class="inbox-header">
+        <div>
+            <div class="eyebrow">Administration</div>
+            <h1>System Inbox</h1>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-light border fw-semibold btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Back to Admin Panel
+        </a>
+    </div>
+
+    {% if inbox_messages %}
+        {% for msg in inbox_messages %}
+            <div class="msg-thread {% if not msg.is_read %}unread{% endif %}">
+                <div class="msg-thread-inner">
+                    <div class="sender-avatar">{{ msg.sender.name|slice:":1"|upper }}</div>
+                    <div class="msg-content">
+                        <div class="msg-meta">
+                            <div>
+                                <div class="sender-name">{{ msg.sender.name }} ({{ msg.sender.role|title }})</div>
+                                <div class="msg-subject">Subject: <strong>{{ msg.ev.display_name|default:"General Inquiry" }}</strong></div>
+                            </div>
+                            <div class="msg-timestamp">
+                                <span class="date">{{ msg.created_at|date:"M d" }}</span>
+                                <span class="time">{{ msg.created_at|time:"H:i" }}</span>
+                            </div>
+                        </div>
+                        <div class="msg-body">{{ msg.content }}</div>
+                        <div class="msg-actions w-100 mt-2">
+                            <form method="POST" action="{% url 'reply_message' msg.id %}" class="d-flex gap-2 w-100">
+                                {% csrf_token %}
+                                <input type="text" name="reply_content" class="form-control form-control-sm rounded-pill px-3" placeholder="Send official reply to {{ msg.sender.name }}..." required style="background: white; border: 1px solid #e2e8f0; font-size: 0.85rem;">
+                                <button type="submit" class="btn btn-admin-reply btn-sm rounded-pill px-4 fw-bold">
+                                    <i class="bi bi-reply-fill me-1"></i>System Reply
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-inbox">
+            <i class="bi bi-shield-check"></i>
+            <h4>No incoming admin inquiries.</h4>
+            <p>You'll receive alert replies and system messages here.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

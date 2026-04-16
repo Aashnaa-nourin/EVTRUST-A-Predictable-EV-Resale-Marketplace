@@ -1,0 +1,368 @@
+{% extends 'marketplace/base.html' %}
+{% load static %}
+
+{% block title %}EVTrust — The Future of EV Resale{% endblock %}
+
+{% block content %}
+<style>
+    .hero-section {
+        background: radial-gradient(circle at top right, rgba(37,99,235,0.15), transparent),
+                    radial-gradient(circle at bottom left, rgba(14,165,233,0.1), transparent),
+                    #0a0f1d;
+        border-radius: var(--border-radius-lg);
+        padding: 110px 80px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 48px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -120px; right: -120px;
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(56,189,248,0.12) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        bottom: -80px; left: -80px;
+        width: 350px; height: 350px;
+        background: radial-gradient(circle, rgba(37,99,235,0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(56,189,248,0.12);
+        border: 1px solid rgba(56,189,248,0.25);
+        color: #38bdf8;
+        padding: 6px 18px;
+        border-radius: 50px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 28px;
+    }
+
+    .hero-eyebrow .dot-pulse {
+        width: 6px; height: 6px;
+        background: #38bdf8;
+        border-radius: 50%;
+        animation: pulse-dot 2s infinite;
+    }
+
+    .hero-h1 {
+        font-size: clamp(3rem, 6vw, 4.8rem);
+        font-weight: 850;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 32px;
+    }
+
+    .hero-h1 .gradient-text {
+        background: linear-gradient(135deg, #38bdf8, #818cf8, #38bdf8);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: text-shine 4s linear infinite;
+    }
+
+    @keyframes text-shine {
+        to { background-position: 200% center; }
+    }
+
+    .hero-desc {
+        font-size: 1.1rem;
+        color: rgba(255,255,255,0.6);
+        line-height: 1.7;
+        max-width: 520px;
+        margin-bottom: 44px;
+    }
+
+    .hero-cta-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+        background: linear-gradient(135deg, #2563eb, #38bdf8);
+        color: white;
+        font-weight: 700;
+        padding: 16px 36px;
+        border-radius: 14px;
+        border: none;
+        font-size: 0.95rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        letter-spacing: 0.01em;
+    }
+
+    .btn-hero-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 40px rgba(37,99,235,0.4);
+        color: white;
+    }
+
+    .btn-hero-ghost {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: rgba(255,255,255,0.85);
+        font-weight: 600;
+        padding: 16px 36px;
+        border-radius: 14px;
+        font-size: 0.95rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-hero-ghost:hover {
+        background: rgba(255,255,255,0.12);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+
+    /* Feature Cards */
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 32px;
+        margin: 64px 0;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: var(--border-radius-lg);
+        padding: 44px;
+        border: 1px solid var(--slate-100);
+        transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--card-accent, #2563eb), transparent);
+        transition: opacity 0.3s;
+        opacity: 0;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 24px 48px -12px rgba(0,0,0,0.1);
+        border-color: #e2e8f0;
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+        width: 56px; height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+    .feature-card h5 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 10px;
+    }
+
+    .feature-card p {
+        color: #64748b;
+        font-size: 0.88rem;
+        line-height: 1.65;
+        margin: 0;
+    }
+
+    /* Stats Section */
+    .metrics-section {
+        background: white;
+        border-radius: 24px;
+        border: 1px solid #f1f5f9;
+        padding: 44px 48px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        text-align: center;
+        margin: 16px 0 32px;
+    }
+
+    .metric-item {
+        padding: 12px 0;
+    }
+
+    .metric-item:not(:last-child) {
+        border-right: 1px solid #f1f5f9;
+    }
+
+    .metric-item .num {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #2563eb;
+        letter-spacing: -1.5px;
+        display: block;
+    }
+
+    .metric-item .desc {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        color: #94a3b8;
+        margin-top: 4px;
+    }
+
+    /* How it Works */
+    .steps-section {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        border-radius: 24px;
+        padding: 52px 48px;
+        margin-bottom: 16px;
+    }
+
+    .step-pill {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        background: #2563eb;
+        color: white;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        text-align: center;
+        line-height: 32px;
+        margin-bottom: 16px;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section { padding: 60px 28px; }
+        .metrics-section { grid-template-columns: 1fr; }
+        .metric-item:not(:last-child) { border-right: none; border-bottom: 1px solid #f1f5f9; }
+        .steps-section { padding: 36px 24px; }
+    }
+</style>
+
+<div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="hero-eyebrow">
+                    <span class="dot-pulse"></span>
+                    Advanced EV Intelligence Platform
+                </div>
+                <h1 class="hero-h1">
+                    The Verified Standard<br>
+                    in EV <span class="gradient-text">Resale.</span>
+                </h1>
+                <p class="hero-desc">
+                    Trade electric vehicles with full battery transparency. Our AI engine computes real-world State of Health scores , so you always know exactly what you're buying.
+                </p>
+                <div class="hero-cta-group">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard_redirect' %}" class="btn-hero-primary">
+                            <i class="bi bi-grid-1x2"></i> Open Console
+                        </a>
+                    {% else %}
+                        <a href="{% url 'register' %}" class="btn-hero-primary">
+                            <i class="bi bi-rocket-takeoff"></i> Get Started Free
+                        </a>
+                        <a href="{% url 'login' %}" class="btn-hero-ghost">
+                            <i class="bi bi-box-arrow-in-right"></i> Sign In
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Cards -->
+    <div class="feature-grid">
+        <div class="feature-card" style="--card-accent: #2563eb;">
+            <div class="feature-icon" style="background: #eff6ff; color: #2563eb;">
+                <i class="bi bi-cpu"></i>
+            </div>
+            <h5>Diagnostic Intelligence</h5>
+            <p>Our verification engine computes State of Health (SOH) using real-world telemetry arrays, giving you a score you can trust.</p>
+        </div>
+        <div class="feature-card" style="--card-accent: #10b981;">
+            <div class="feature-icon" style="background: #ecfdf5; color: #10b981;">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h5>Enterprise Security</h5>
+            <p>Manual oversight and admin-confirmed transactions ensure every deal on EVTrust is protected and fully verified.</p>
+        </div>
+        <div class="feature-card" style="--card-accent: #f59e0b;">
+            <div class="feature-icon" style="background: #fffbeb; color: #f59e0b;">
+                <i class="bi bi-lightning-charge"></i>
+            </div>
+            <h5>Verified Inventory</h5>
+            <p>Browse a curated fleet of high-performance electric vehicles, each with AI-verified battery health reports.</p>
+        </div>
+    </div>
+
+
+    <!-- How it Works -->
+    <div class="steps-section">
+        <h2 class="fw-bold mb-2" style="letter-spacing: -1px; font-size: 1.8rem;">How EVTrust Works</h2>
+        <p class="text-muted mb-5" style="font-size: 0.95rem;">Three simple steps to complete peace of mind.</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="d-flex gap-3">
+                    <div class="step-pill">1</div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Seller Lists Vehicle</h6>
+                        <p class="text-muted small mb-0">Sellers register their EV and upload battery telemetry CSV data for analysis.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex gap-3">
+                    <div class="step-pill">2</div>
+                    <div>
+                        <h6 class="fw-bold mb-1">AI Runs Health Check</h6>
+                        <p class="text-muted small mb-0">Buyers run our AI model to get accurate SOH and RUL predictions on any listing.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex gap-3">
+                    <div class="step-pill">3</div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Admin Confirms Sale</h6>
+                        <p class="text-muted small mb-0">Purchase requests are confirmed by our admin team, ensuring full marketplace integrity.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

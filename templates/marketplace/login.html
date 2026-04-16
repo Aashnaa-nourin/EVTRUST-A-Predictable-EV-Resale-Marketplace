@@ -1,0 +1,267 @@
+{% extends 'marketplace/base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background: radial-gradient(circle at top left, #1e3a8a, transparent),
+                    radial-gradient(circle at bottom right, #0f172a, transparent),
+                    #0f172a !important;
+        min-height: calc(100vh - 88px);
+        display: flex;
+        align-items: center;
+    }
+
+    .auth-container {
+        width: 100%;
+        max-width: 1040px;
+        background: white;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.5);
+        display: flex;
+        margin: 40px auto;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* ---- Left Visual Panel ---- */
+    .auth-visual {
+        flex: 1;
+        background: linear-gradient(165deg, #1e3a8a 0%, #1d4ed8 40%, #2563eb 100%);
+        color: white;
+        padding: 80px 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+    .auth-visual::before {
+        content: '';
+        position: absolute;
+        top: -80px; right: -80px;
+        width: 300px; height: 300px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 50%;
+    }
+    .auth-visual::after {
+        content: '';
+        position: absolute;
+        bottom: -100px; left: -60px;
+        width: 350px; height: 350px;
+        background: rgba(255,255,255,0.04);
+        border-radius: 50%;
+    }
+    .brand-logo {
+        font-size: 1.8rem;
+        font-weight: 900;
+        letter-spacing: -1px;
+        position: relative;
+        z-index: 1;
+    }
+    .brand-logo span { color: #7dd3fc; }
+    .visual-tagline {
+        position: relative;
+        z-index: 1;
+    }
+    .visual-tagline h2 {
+        font-size: 2.4rem;
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: -1px;
+        margin-bottom: 16px;
+    }
+    .visual-feature {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 20px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 16px;
+        backdrop-filter: blur(8px);
+        margin-bottom: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        position: relative;
+        z-index: 1;
+        transition: transform 0.3s ease;
+    }
+    .visual-feature:hover { transform: translateX(8px); background: rgba(255,255,255,0.12); }
+    .visual-feature .icon {
+        font-size: 1.3rem;
+        width: 38px; height: 38px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(255,255,255,0.15);
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    /* ---- Right Form Panel ---- */
+    .auth-form-side {
+        flex: 1.1;
+        padding: 60px 55px;
+        background: #ffffff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .auth-form-side .eyebrow {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #3b82f6;
+        margin-bottom: 12px;
+    }
+    .auth-title {
+        font-weight: 900;
+        font-size: 2.2rem;
+        letter-spacing: -1.5px;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+    .auth-subtitle {
+        color: #94a3b8;
+        font-size: 1rem;
+        margin-bottom: 38px;
+    }
+    .form-label-custom {
+        display: block;
+        font-weight: 700;
+        font-size: 0.78rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 8px;
+    }
+    .form-input-custom {
+        width: 100% !important;
+        padding: 14px 18px !important;
+        border-radius: 14px !important;
+        border: 1.5px solid #e2e8f0 !important;
+        background: #f8fafc !important;
+        font-size: 0.97rem !important;
+        transition: all 0.25s ease !important;
+        color: #0f172a !important;
+    }
+    .form-input-custom:focus {
+        border-color: #3b82f6 !important;
+        background: #fff !important;
+        box-shadow: 0 0 0 4px rgba(59,130,246,0.12) !important;
+    }
+    .btn-login {
+        width: 100%;
+        padding: 15px;
+        font-weight: 800;
+        font-size: 1rem;
+        letter-spacing: 0.3px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+        border: none;
+        color: white;
+        margin-top: 28px;
+        transition: all 0.3s;
+        box-shadow: 0 8px 20px -4px rgba(59,130,246,0.45);
+    }
+    .btn-login:hover {
+        background: linear-gradient(135deg, #1e40af, #2563eb);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px -4px rgba(59,130,246,0.55);
+    }
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #cbd5e1;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 28px 0;
+    }
+    .divider::before, .divider::after {
+        content: ''; flex: 1; height: 1px; background: #f1f5f9;
+    }
+    @media (max-width: 992px) {
+        .auth-visual { display: none; }
+        .auth-container { max-width: 500px; }
+        .auth-form-side { padding: 48px 36px; }
+    }
+</style>
+
+<div class="auth-container animate__animated animate__fadeIn">
+
+    <!-- LEFT: Visual Panel -->
+    <div class="auth-visual">
+        <div class="brand-logo"><span>EV</span>Trust</div>
+
+        <div class="visual-tagline">
+            <h2>The Future of<br>EV Reselling.</h2>
+            <p style="opacity:0.75; font-size:1.05rem; margin-bottom:32px;">
+                The only marketplace where every EV listing is backed by AI-verified battery data.
+            </p>
+            <div class="visual-feature">
+                <div class="icon">⚡</div>
+                <span>AI Battery Health Predictions</span>
+            </div>
+            <div class="visual-feature">
+                <div class="icon">🛡️</div>
+                <span>Zero-Trust Listing Verification</span>
+            </div>
+            <div class="visual-feature">
+                <div class="icon">🤝</div>
+                <span>Secure Purchase Module</span>
+            </div>
+        </div>
+
+        <p style="opacity:0.45; font-size:0.78rem; position:relative; z-index:1;">© 2025 EVTrust · Marketplace Platform</p>
+    </div>
+
+    <!-- RIGHT: Form Panel -->
+    <div class="auth-form-side">
+        <p class="eyebrow">Secure Login</p>
+        <h1 class="auth-title">Welcome back.</h1>
+        <p class="auth-subtitle">Enter your credentials to access your dashboard.</p>
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger rounded-3 border-0 small fw-bold" style="background:#fef2f2; color:#b91c1c;">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="mb-4">
+                <label class="form-label-custom">{{ field.label }}</label>
+                <input
+                    type="{{ field.field.widget.input_type }}"
+                    name="{{ field.html_name }}"
+                    id="{{ field.id_for_label }}"
+                    value="{{ field.value|default:'' }}"
+                    class="form-input-custom"
+                    {% if field.field.required %}required{% endif %}
+                    placeholder="Enter your {{ field.label|lower }}"
+                >
+                {% if field.errors %}
+                <div class="text-danger small mt-2 fw-bold"><i class="bi bi-x-circle me-1"></i>{{ field.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="text-end mb-4 mt-1">
+                <a href="{% url 'password_reset' %}" class="fw-bold small text-decoration-none" style="color: #3b82f6;">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn-login mt-2">
+                Sign In to EVTrust →
+            </button>
+        </form>
+
+        <div class="divider">OR</div>
+
+        <div class="text-center">
+            <p class="text-muted small mb-1">New to EVTrust?</p>
+            <a href="{% url 'register' %}" class="fw-bold text-primary text-decoration-none">Create an Account →</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

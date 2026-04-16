@@ -1,0 +1,340 @@
+{% extends 'marketplace/base.html' %}
+
+{% block title %}Battery Health Center — EVTrust{% endblock %}
+
+{% block content %}
+<style>
+    .health-hero {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        border-radius: 24px;
+        padding: 52px 48px;
+        color: white;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .health-hero::after {
+        content: '';
+        position: absolute;
+        top: -80px; right: -80px;
+        width: 300px; height: 300px;
+        background: radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .health-hero h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 8px;
+    }
+
+    .health-hero p {
+        color: rgba(255,255,255,0.55);
+        font-size: 0.92rem;
+        margin: 0;
+        max-width: 480px;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+    }
+
+    .hero-stat-box {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 14px;
+        padding: 18px 24px;
+        text-align: center;
+    }
+
+    .hero-stat-box .num {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #38bdf8;
+        letter-spacing: -1px;
+        display: block;
+        line-height: 1;
+    }
+
+    .hero-stat-box .lbl {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(255,255,255,0.35);
+        margin-top: 4px;
+    }
+
+    /* Section */
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .section-header .icon-badge {
+        width: 38px; height: 38px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .section-header h3 {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    /* Health Cards */
+    .health-card {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .health-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 32px -8px rgba(0,0,0,0.08);
+        border-color: #e2e8f0;
+    }
+
+    .health-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+
+    .health-card h5 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 3px;
+    }
+
+    .health-card .ev-meta {
+        font-size: 0.76rem;
+        color: #94a3b8;
+    }
+
+    .action-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+    }
+
+    .health-card-desc {
+        font-size: 0.82rem;
+        color: #64748b;
+        flex: 1;
+        margin: 12px 0 16px;
+        line-height: 1.55;
+    }
+
+    .btn-health {
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 10px 20px;
+        border-radius: 11px;
+        transition: all 0.25s;
+    }
+
+    /* Verified card */
+    .verified-card {
+        background: white;
+        border: 1px solid #a7f3d0;
+        border-radius: 20px;
+        padding: 24px;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .verified-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 32px -8px rgba(16,185,129,0.15);
+    }
+
+    .soh-rul-grid {
+        background: #f8fafc;
+        border-radius: 14px;
+        padding: 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        margin: 14px 0;
+        border: 1px solid #f1f5f9;
+    }
+
+    .soh-rul-item {
+        text-align: center;
+        padding: 8px 0;
+    }
+
+    .soh-rul-item:first-child { border-right: 1px solid #f1f5f9; }
+
+    .soh-rul-item .metric-val {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+
+    .soh-rul-item .metric-lbl {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+    }
+
+    .empty-section {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+        padding: 60px 20px;
+        text-align: center;
+        color: #cbd5e1;
+    }
+
+    .empty-section i { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+    .empty-section p { font-size: 0.88rem; margin: 0; }
+</style>
+
+<div>
+    <!-- Hero Header -->
+    <div class="health-hero">
+        <div class="row align-items-center">
+            <div class="col-md-7">
+                <h1><i class="bi bi-battery-charging me-2 opacity-75"></i>AI Battery Verification Hub</h1>
+                <p>Monitor, verify, and unlock purchase capabilities for every EV in the marketplace.</p>
+            </div>
+            <div class="col-md-5 text-md-end mt-4 mt-md-0">
+                <div class="hero-stats justify-content-md-end">
+                    <div class="hero-stat-box">
+                        <span class="num">{{ total_verified }}</span>
+                        <div class="lbl">Verified</div>
+                    </div>
+                    <div class="hero-stat-box">
+                        <span class="num">{{ pending_checks|length }}</span>
+                        <div class="lbl">Check Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Awaiting Health Check -->
+    <div class="mb-5">
+        <div class="section-header">
+            <div class="icon-badge" style="background: #eff6ff; color: #2563eb;">
+                <i class="bi bi-cpu"></i>
+            </div>
+            <h3>Ready for AI Health Check</h3>
+        </div>
+        <div class="row g-4">
+            {% for ev in pending_checks %}
+            <div class="col-md-6 col-lg-4">
+                <div class="health-card">
+                    <div class="health-card-header">
+                        <div>
+                            <h5>{{ ev.display_name }}</h5>
+                            <div class="ev-meta">ID: #{{ ev.id }} &bull; {{ ev.year }}</div>
+                        </div>
+                        <span class="action-badge" style="background: #fffbeb; color: #92400e;">
+                            Action Required
+                        </span>
+                    </div>
+                    <p class="health-card-desc">
+                        Telemetry data is uploaded. Run the AI prediction to compute SOH and RUL scores for this vehicle.
+                    </p>
+                    <a href="{% url 'ev_detail' ev.pk %}" class="btn btn-primary btn-health w-100">
+                        <i class="bi bi-play-circle me-2"></i>Run Health Check
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-section">
+                    <i class="bi bi-check-circle-fill" style="color: #10b981;"></i>
+                    <p>No vehicles are currently awaiting health checks. All clear!</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Verified Inventory -->
+    <div class="mb-5">
+        <div class="section-header">
+            <div class="icon-badge" style="background: #ecfdf5; color: #10b981;">
+                <i class="bi bi-patch-check-fill"></i>
+            </div>
+            <h3>Verified Inventory</h3>
+        </div>
+        <div class="row g-4">
+            {% for ev in verified_cars %}
+            <div class="col-md-6 col-lg-4">
+                <div class="verified-card">
+                    <div class="health-card-header">
+                        <div>
+                            <h5 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 3px;">
+                                {{ ev.display_name }}
+                            </h5>
+                            <div class="ev-meta">{{ ev.year }} &bull; ₹{{ ev.price|floatformat:0 }}</div>
+                        </div>
+                        <span class="action-badge" style="background: #10b981; color: white;">
+                            <i class="bi bi-patch-check me-1"></i>Verified
+                        </span>
+                    </div>
+
+                    {% with battery=ev.battery_data.last %}
+                    <div class="soh-rul-grid">
+                        <div class="soh-rul-item">
+                            <div class="metric-val" style="color: #10b981;">{{ battery.soh_prediction|floatformat:1 }}%</div>
+                            <div class="metric-lbl">SOH</div>
+                        </div>
+                        <div class="soh-rul-item">
+                            <div class="metric-val" style="color: #2563eb;">{{ battery.rul_prediction|floatformat:1 }}y</div>
+                            <div class="metric-lbl">RUL</div>
+                        </div>
+                    </div>
+                    {% endwith %}
+
+                    <a href="{% url 'ev_detail' ev.pk %}" class="btn btn-outline-success btn-health w-100 mt-auto">
+                        <i class="bi bi-file-earmark-bar-graph me-2"></i>View Report & Purchase
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-section">
+                    <i class="bi bi-battery"></i>
+                    <p>No verified EVs in inventory yet.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

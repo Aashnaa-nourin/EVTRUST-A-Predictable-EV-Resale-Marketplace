@@ -1,0 +1,560 @@
+{% extends 'marketplace/base.html' %}
+
+{% block title %}Admin Control Center — EVTrust{% endblock %}
+
+{% block content %}
+<style>
+    .admin-page-header {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        color: white;
+        border-radius: 24px;
+        padding: 44px 48px;
+        margin-bottom: 36px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-page-header::before {
+        content: '';
+        position: absolute;
+        top: -100px; right: -100px;
+        width: 350px; height: 350px;
+        background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .admin-page-header .eyebrow {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #38bdf8;
+        margin-bottom: 10px;
+    }
+
+    .admin-page-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 6px;
+    }
+
+    .admin-page-header p {
+        color: rgba(255,255,255,0.5);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 18px;
+        padding: 24px 28px;
+        border: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -8px rgba(0,0,0,0.08);
+    }
+
+    .stat-icon-box {
+        width: 56px; height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .stat-icon-box svg, .stat-icon-box i {
+        font-size: 1.5rem;
+    }
+
+    .stat-card .stat-num {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        color: #0f172a;
+        line-height: 1;
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-top: 4px;
+    }
+
+    /* Tables */
+    .data-table-card {
+        background: white;
+        border-radius: 22px;
+        padding: 32px;
+        border: 1px solid #f1f5f9;
+        margin-bottom: 28px;
+    }
+
+    .data-table-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #f8fafc;
+    }
+
+    .data-table-header h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .data-table-header h4 .table-icon {
+        width: 36px; height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .admin-table thead th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 14px 16px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    .admin-table thead th:first-child { border-radius: 10px 0 0 0; }
+    .admin-table thead th:last-child { border-radius: 0 10px 0 0; }
+
+    .admin-table tbody td {
+        padding: 16px;
+        vertical-align: middle;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: #1e293b;
+        border-bottom: 1px solid #f8fafc;
+    }
+
+    .admin-table tbody tr:last-child td { border: none; }
+
+    .admin-table tbody tr:hover td { background: #fafbfd; }
+
+    .cell-primary { font-weight: 700; color: #0f172a; margin-bottom: 2px; }
+    .cell-sub { font-size: 0.78rem; color: #94a3b8; }
+
+    .btn-action { font-size: 0.8rem; font-weight: 700; padding: 7px 16px; }
+
+    .empty-row td {
+        text-align: center;
+        padding: 60px 20px !important;
+        color: #cbd5e1;
+    }
+
+    .empty-row .empty-icon {
+        font-size: 2.5rem;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .empty-row span {
+        font-size: 0.88rem;
+    }
+</style>
+
+<div>
+    <!-- Header -->
+    <div class="admin-page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="eyebrow"><i class="bi bi-shield-lock me-2"></i>Security & Operations</div>
+                <h1>Admin Control Center</h1>
+                <p>Overseeing marketplace integrity, user verification, and purchase activity.</p>
+            </div>
+            <div>
+                <!-- Removed redundant inbox button -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon-box" style="background: #fffbeb; color: #f59e0b;">
+                    <i class="bi bi-file-earmark-check" style="font-size: 1.5rem;"></i>
+                </div>
+                <div>
+                    <div class="stat-num">{{ pending_evs }}</div>
+                    <div class="stat-label">Pending EV Approvals</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon-box" style="background: #eff6ff; color: #2563eb;">
+                    <i class="bi bi-people" style="font-size: 1.5rem;"></i>
+                </div>
+                <div>
+                    <div class="stat-num">{{ pending_users }}</div>
+                    <div class="stat-label">Account Verification Requests</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EV Listings Table -->
+    <div class="data-table-card">
+        <div class="data-table-header">
+            <h4>
+                <div class="table-icon" style="background: #eff6ff; color: #2563eb;">
+                    <i class="bi bi-car-front"></i>
+                </div>
+                EV Listings Management
+            </h4>
+        </div>
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th width="35%">Vehicle & Seller</th>
+                        <th>Valuation</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ev in evs %}
+                    <tr>
+                        <td>
+                            <div class="cell-primary">{{ ev.display_name }}</div>
+                            <div class="cell-sub">Seller: {{ ev.seller.name }}</div>
+                        </td>
+                        <td class="fw-bold" style="color: #2563eb;">₹{{ ev.price|floatformat:0 }}</td>
+                        <td>
+                            {% if ev.listing_status == 'pending' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#fffbeb; color:#92400e; font-size:0.75rem;">
+                                    <i class="bi bi-clock me-1"></i>Pending Review
+                                </span>
+                            {% elif ev.listing_status == 'approved' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#ecfdf5; color:#065f46; font-size:0.75rem;">
+                                    <i class="bi bi-check-circle me-1"></i>Live
+                                </span>
+                            {% else %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#f1f5f9; color:#475569; font-size:0.75rem;">
+                                    <i class="bi bi-bag-check me-1"></i>Sold
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td style="color: #94a3b8;">{{ ev.created_at|date:"M d, Y" }}</td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                {% if ev.listing_status == 'pending' %}
+                                    <a href="{% url 'approve_ev' ev.pk %}" class="btn btn-success btn-action rounded-pill">
+                                        <i class="bi bi-check me-1"></i>Approve
+                                    </a>
+                                    <a href="{% url 'reject_ev' ev.pk %}"
+                                       class="btn btn-outline-danger btn-action rounded-pill"
+                                       onclick="return confirm('Reject and delete this listing?')">
+                                        Reject
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'reject_ev' ev.pk %}"
+                                       class="btn btn-outline-danger btn-action rounded-pill"
+                                       onclick="return confirm('Remove this live listing?')">
+                                        <i class="bi bi-trash me-1"></i>Remove
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="5">
+                            <span class="empty-icon"><i class="bi bi-car-front"></i></span>
+                            <span>No EV listings found.</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- User Management Table -->
+    <div class="data-table-card">
+        <div class="data-table-header">
+            <h4>
+                <div class="table-icon" style="background: #ecfdf5; color: #10b981;">
+                    <i class="bi bi-people"></i>
+                </div>
+                Platform User Directory
+            </h4>
+        </div>
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th width="35%">User Profile</th>
+                        <th>Role</th>
+                        <th>Account State</th>
+                        <th>Joined</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    {% if not u.is_superuser %}
+                    <tr>
+                        <td>
+                            <div class="cell-primary">{{ u.name }}</div>
+                            <div class="cell-sub">{{ u.email }}</div>
+                        </td>
+                        <td>
+                            {% if u.role == 'seller' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#eff6ff; color:#1d4ed8; font-size:0.75rem;">
+                                    <i class="bi bi-shop me-1"></i>Seller
+                                </span>
+                            {% elif u.role == 'buyer' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#ecfdf5; color:#065f46; font-size:0.75rem;">
+                                    <i class="bi bi-person-check me-1"></i>Buyer
+                                </span>
+                            {% else %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#f1f5f9; color:#475569; font-size:0.75rem;">
+                                    {{ u.get_role_display }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if u.account_status == 'pending' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#fffbeb; color:#92400e; font-size:0.75rem;">
+                                    <i class="bi bi-hourglass me-1"></i>Pending Access
+                                </span>
+                            {% elif u.account_status == 'approved' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#ecfdf5; color:#065f46; font-size:0.75rem;">
+                                    <i class="bi bi-check-circle me-1"></i>Active
+                                </span>
+                            {% else %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#fef2f2; color:#991b1b; font-size:0.75rem;">
+                                    <i class="bi bi-slash-circle me-1"></i>Suspended
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td style="color: #94a3b8;">{{ u.date_joined|date:"M d, Y" }}</td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                {% if u.account_status != 'approved' %}
+                                    <a href="{% url 'approve_user' u.pk %}" class="btn btn-success btn-action rounded-pill">
+                                        <i class="bi bi-check me-1"></i>Grant Access
+                                    </a>
+                                {% endif %}
+                                {% if u.account_status != 'blocked' %}
+                                    <a href="{% url 'block_user' u.pk %}" class="btn btn-outline-danger btn-action rounded-pill">
+                                        Revoke
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="5">
+                            <span class="empty-icon"><i class="bi bi-people"></i></span>
+                            <span>No users found.</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Purchase Requests Table -->
+    <div class="data-table-card" style="border-top: 3px solid #10b981; border-radius: 22px;">
+        <div class="data-table-header">
+            <h4>
+                <div class="table-icon" style="background: #ecfdf5; color: #10b981;">
+                    <i class="bi bi-bag-check"></i>
+                </div>
+                Purchase Requests
+            </h4>
+            {% if pending_purchases > 0 %}
+                <span class="badge rounded-pill px-3 py-2 fw-bold" style="background:#fef2f2; color:#991b1b; font-size:0.78rem;">
+                    {{ pending_purchases }} Pending
+                </span>
+            {% else %}
+                <span class="badge rounded-pill px-3 py-2 fw-bold" style="background:#f1f5f9; color:#64748b; font-size:0.78rem;">
+                    All Clear
+                </span>
+            {% endif %}
+        </div>
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>EV Vehicle</th>
+                        <th>Buyer</th>
+                        <th>Seller</th>
+                        <th>Price (INR)</th>
+                        <th>Battery SOH</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in purchase_requests %}
+                    <tr>
+                        <td>
+                            <div class="cell-primary">{{ req.listing.manufacturer }} {{ req.listing.vehicle_model }}</div>
+                            <div class="cell-sub">{{ req.listing.year }}</div>
+                        </td>
+                        <td>
+                            <div class="cell-primary">{{ req.buyer.name }}</div>
+                            <div class="cell-sub">{{ req.buyer.email }}</div>
+                        </td>
+                        <td class="fw-600">{{ req.seller.name }}</td>
+                        <td class="fw-bold" style="color: #2563eb;">&#8377;{{ req.listing.price|floatformat:0 }}</td>
+                        <td>
+                            {% with battery=req.listing.battery_data.last %}
+                                {% if battery and battery.soh_prediction %}
+                                    <span class="fw-bold" style="color: #10b981;">{{ battery.soh_prediction|floatformat:1 }}%</span>
+                                {% else %}
+                                    <span style="color: #cbd5e1; font-size: 0.8rem;">N/A</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% if req.request_status == 'submitted' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#fffbeb; color:#92400e; font-size:0.75rem;">Awaiting Seller</span>
+                            {% elif req.request_status == 'seller_confirmed' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#eff6ff; color:#1d4ed8; font-size:0.75rem;">Verified by Seller</span>
+                            {% elif req.request_status == 'under_review' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#f1f5f9; color:#475569; font-size:0.75rem;">Internal Review</span>
+                            {% elif req.request_status == 'invoice_sent' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#faf5ff; color:#6b21a8; font-size:0.75rem;">Invoice Sent</span>
+                            {% elif req.request_status == 'payment_submitted' %}
+                                <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#ecfdf5; color:#065f46; font-size:0.75rem;">Payment Received</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                {% if req.request_status == 'seller_confirmed' %}
+                                    <a href="{% url 'admin_review_purchase' req.pk %}" class="btn btn-primary btn-action rounded-pill">
+                                        <i class="bi bi-search me-1"></i>Verify Details
+                                    </a>
+                                {% elif req.request_status == 'under_review' %}
+                                    <a href="{% url 'admin_generate_invoice' req.pk %}" class="btn btn-purple btn-action rounded-pill" style="background: #7c3aed; color: white;">
+                                        <i class="bi bi-file-earmark-text me-1"></i>Generate Invoice
+                                    </a>
+                                {% elif req.request_status == 'payment_submitted' %}
+                                    <a href="{% url 'confirm_purchase' req.pk %}"
+                                       class="btn btn-success btn-action rounded-pill"
+                                       onclick="return confirm('Confirm payment and finalize sale?')">
+                                        <i class="bi bi-check-circle me-1"></i>Finalize Sale
+                                    </a>
+                                {% elif req.request_status == 'invoice_sent' %}
+                                    <button class="btn btn-secondary btn-action rounded-pill" disabled style="opacity: 0.65;">
+                                        <i class="bi bi-hourglass-split me-1"></i>Awaiting Payment
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-secondary btn-action rounded-pill" disabled style="opacity: 0.65;">
+                                        <i class="bi bi-clock me-1"></i>Pending
+                                    </button>
+                                {% endif %}
+                                <a href="{% url 'reject_purchase' req.pk %}"
+                                   class="btn btn-outline-danger btn-action rounded-pill"
+                                   onclick="return confirm('Reject this request?')">
+                                    Reject
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="7">
+                            <span class="empty-icon"><i class="bi bi-inbox"></i></span>
+                            <span>No pending purchase requests.</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Completed Transactions Table -->
+    <div class="data-table-card" style="border-top: 3px solid #3b82f6; border-radius: 22px;">
+        <div class="data-table-header">
+            <h4>
+                <div class="table-icon" style="background: #eff6ff; color: #2563eb;">
+                    <i class="bi bi-archive-fill"></i>
+                </div>
+                Historic Transaction Ledger
+            </h4>
+        </div>
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Date Finalized</th>
+                        <th>EV Asset</th>
+                        <th>Buyer</th>
+                        <th>Seller</th>
+                        <th>Sale Amount</th>
+                        <th class="text-end">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trans in completed_transactions %}
+                    <tr>
+                        <td style="color: #94a3b8;">{{ trans.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="cell-primary">{{ trans.listing.display_name }}</div>
+                            <div class="cell-sub">Year: {{ trans.listing.year }}</div>
+                        </td>
+                        <td>{{ trans.buyer.name }}</td>
+                        <td>{{ trans.seller.name }}</td>
+                        <td class="fw-bold" style="color: #0f172a;">₹{{ trans.listing.price|floatformat:0 }}</td>
+                        <td class="text-end">
+                            <span class="badge rounded-pill fw-bold px-3 py-2" style="background:#f1f5f9; color:#475569; font-size:0.75rem;">
+                                <i class="bi bi-check-all me-1"></i>Ownership Transferred
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="6">
+                            <span class="empty-icon"><i class="bi bi-archive"></i></span>
+                            <span>No ledger history available.</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

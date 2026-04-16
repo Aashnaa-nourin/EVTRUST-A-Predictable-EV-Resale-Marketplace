@@ -1,0 +1,251 @@
+{% extends 'marketplace/base.html' %}
+
+{% block title %}EV Inventory — EVTrust{% endblock %}
+
+{% block content %}
+<style>
+    .page-header-bar {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 32px;
+    }
+
+    .page-header-bar .eyebrow {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #2563eb;
+        margin-bottom: 4px;
+    }
+
+    .page-header-bar h1 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.5px;
+        margin: 0;
+    }
+
+    .data-table-card {
+        background: white;
+        border-radius: 22px;
+        padding: 0;
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+    }
+
+    .inventory-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .inventory-table thead th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 16px 20px;
+        border-bottom: 2px solid #f1f5f9;
+        white-space: nowrap;
+    }
+
+    .inventory-table tbody td {
+        padding: 18px 20px;
+        vertical-align: middle;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: #1e293b;
+        border-bottom: 1px solid #f8fafc;
+    }
+
+    .inventory-table tbody tr:last-child td { border: none; }
+    .inventory-table tbody tr:hover td { background: #fafbfd; }
+
+    .cell-primary { font-weight: 700; color: #0f172a; margin-bottom: 3px; }
+    .cell-sub { font-size: 0.76rem; color: #94a3b8; }
+
+    .status-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 14px;
+        border-radius: 8px;
+        font-size: 0.73rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
+    .status-pending { background: #fffbeb; color: #92400e; }
+    .status-approved { background: #ecfdf5; color: #065f46; }
+    .status-sold { background: #f1f5f9; color: #475569; }
+
+    .diagnostic-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+
+    .diag-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .btn-tbl {
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 7px 14px;
+        border-radius: 9px;
+        transition: all 0.2s;
+    }
+
+    .btn-tbl:hover { transform: translateY(-1px); }
+
+    .empty-state {
+        padding: 80px 20px;
+        text-align: center;
+    }
+
+    .empty-state i { font-size: 3rem; color: #e2e8f0; display: block; margin-bottom: 12px; }
+    .empty-state h5 { font-weight: 700; color: #94a3b8; margin-bottom: 8px; }
+    .empty-state p { font-size: 0.88rem; color: #cbd5e1; }
+
+    .footer-nav {
+        text-align: center;
+        margin-top: 24px;
+    }
+
+    .footer-nav a {
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        transition: color 0.2s;
+    }
+
+    .footer-nav a:hover { color: #2563eb; }
+</style>
+
+<div>
+    <div class="page-header-bar">
+        <div>
+            <div class="eyebrow">Asset Control</div>
+            <h1>EV Inventory</h1>
+        </div>
+        <a href="{% url 'add_ev' %}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="bi bi-plus-lg"></i> Register New Asset
+        </a>
+    </div>
+
+    <div class="data-table-card">
+        <div class="table-responsive">
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th width="28%">Manufacturer & Model</th>
+                        <th>Release</th>
+                        <th>Valuation</th>
+                        <th>Listing Status</th>
+                        <th>Diagnostic State</th>
+                        <th class="text-end">Operations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ev in listings %}
+                    <tr>
+                        <td>
+                            <div class="cell-primary">{{ ev.display_name }}</div>
+                            <div class="cell-sub">Asset ID: #{{ ev.id|stringformat:"05d" }}</div>
+                        </td>
+                        <td style="color: #64748b;">{{ ev.year }}</td>
+                        <td class="fw-bold" style="color: #2563eb;">₹{{ ev.price|floatformat:0 }}</td>
+                        <td>
+                            {% if ev.listing_status == 'pending' %}
+                                <span class="status-tag status-pending">
+                                    <i class="bi bi-clock"></i>Pending Review
+                                </span>
+                            {% elif ev.listing_status == 'approved' %}
+                                <span class="status-tag status-approved">
+                                    <i class="bi bi-check-circle"></i>Live Listing
+                                </span>
+                            {% else %}
+                                <span class="status-tag status-sold">
+                                    <i class="bi bi-bag-check"></i>Transaction Complete
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% with battery=ev.battery_data.last %}
+                                {% if battery %}
+                                    {% if battery.prediction_status == 'pending' %}
+                                        <div class="diagnostic-status text-warning">
+                                            <div class="spinner-grow spinner-grow-sm" role="status" style="color:#f59e0b;"></div>
+                                            Analyzing...
+                                        </div>
+                                    {% elif battery.prediction_status == 'completed' %}
+                                        <div class="diagnostic-status" style="color: #10b981;">
+                                            <div class="diag-dot" style="background: #10b981;"></div>
+                                            Verified SOH
+                                        </div>
+                                    {% else %}
+                                        <div class="diagnostic-status" style="color: #ef4444;">
+                                            <div class="diag-dot" style="background: #ef4444;"></div>
+                                            Data Failure
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="diagnostic-status" style="color: #cbd5e1;">
+                                        <div class="diag-dot" style="background: #e2e8f0;"></div>
+                                        No Data
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'edit_ev' ev.pk %}" class="btn btn-light border btn-tbl">
+                                    <i class="bi bi-pencil me-1"></i>Edit
+                                </a>
+                                <a href="{% url 'upload_battery_csv' ev.pk %}" class="btn btn-outline-info btn-tbl">
+                                    <i class="bi bi-upload me-1"></i>Data
+                                </a>
+                                <a href="{% url 'delete_ev' ev.pk %}"
+                                   class="btn btn-outline-danger btn-tbl"
+                                   onclick="return confirm('Confirm permanent deletion of this listing?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="bi bi-car-front"></i>
+                                <h5>No assets currently registered.</h5>
+                                <p>Register your first EV to begin battery health tracking and sales.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer-nav">
+        <a href="{% url 'seller_dashboard' %}"><i class="bi bi-arrow-left me-2"></i>Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

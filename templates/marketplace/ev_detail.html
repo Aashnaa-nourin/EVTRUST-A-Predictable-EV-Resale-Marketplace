@@ -1,0 +1,521 @@
+{% extends 'marketplace/base.html' %}
+{% load static %}
+
+{% block title %}{{ ev.display_name }} — EVTrust{% endblock %}
+
+{% block content %}
+<style>
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #64748b;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 28px;
+        transition: color 0.2s;
+    }
+    .back-link:hover { color: #2563eb; }
+
+    .gallery-box {
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        height: 480px;
+        background: var(--slate-100);
+        position: relative;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--slate-200);
+    }
+
+    .gallery-box img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+    }
+
+    .no-img-placeholder {
+        width: 100%; height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #cbd5e1;
+        gap: 12px;
+    }
+
+    .no-img-placeholder i { font-size: 4rem; }
+    .no-img-placeholder span { font-size: 0.9rem; font-weight: 600; }
+
+    /* Detail Card */
+    .detail-panel {
+        background: white;
+        border-radius: var(--border-radius-lg);
+        border: 1px solid var(--slate-100);
+        padding: 44px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .listing-id-badge {
+        display: inline-block;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 14px;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 14px;
+    }
+
+    .ev-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.5px;
+        margin-bottom: 6px;
+    }
+
+    .ev-subtitle {
+        font-size: 0.9rem;
+        color: #94a3b8;
+        margin-bottom: 28px;
+    }
+
+    .specs-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        background: #f8fafc;
+        border-radius: 14px;
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+
+    .spec-cell {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .spec-cell:nth-last-child(-n+2) { border-bottom: none; }
+    .spec-cell:nth-child(odd) { border-right: 1px solid #f1f5f9; }
+
+    .spec-cell .spec-lbl {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+        margin-bottom: 3px;
+    }
+
+    .spec-cell .spec-val {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .price-area {
+        text-align: right;
+    }
+
+    .price-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+        margin-bottom: 4px;
+    }
+
+    .price-value {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #2563eb;
+        letter-spacing: -1px;
+    }
+
+    .description-text {
+        color: #334155;
+        font-size: 0.93rem;
+        line-height: 1.75;
+    }
+
+    /* Battery Report */
+    .battery-panel {
+        background: white;
+        border-radius: var(--border-radius-lg);
+        border: 1px solid var(--slate-100);
+        border-top: 4px solid var(--primary);
+        padding: 40px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .battery-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+
+    .battery-panel-header h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .soh-display {
+        text-align: center;
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 28px;
+        border: 1px solid #f1f5f9;
+        margin-bottom: 16px;
+    }
+
+    .soh-value {
+        font-size: 3.2rem;
+        font-weight: 900;
+        letter-spacing: -2px;
+        line-height: 1;
+        color: #2563eb;
+        margin-bottom: 6px;
+    }
+
+    .soh-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+    }
+
+    .rul-row {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        border: 1px solid #f1f5f9;
+    }
+
+    .rul-row .rul-lbl { font-size: 0.82rem; color: #64748b; font-weight: 600; }
+    .rul-row .rul-val { font-size: 1.1rem; font-weight: 800; color: #06b6d4; }
+
+    .health-verdict {
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        border-left: 4px solid;
+    }
+
+    .verdict-good { background: #ecfdf5; color: #065f46; border-color: #10b981; }
+    .verdict-warn { background: #fffbeb; color: #92400e; border-color: #f59e0b; }
+    .verdict-bad { background: #fef2f2; color: #991b1b; border-color: #ef4444; }
+
+    /* Contact & Purchase Panel */
+    .contact-panel {
+        background: var(--slate-900);
+        color: white;
+        border-radius: var(--border-radius-lg);
+        padding: 40px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .contact-panel h5 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .contact-panel .sub {
+        font-size: 0.82rem;
+        opacity: 0.45;
+        margin-bottom: 20px;
+    }
+
+    .contact-panel textarea {
+        background: rgba(255,255,255,0.06) !important;
+        border-color: rgba(255,255,255,0.1) !important;
+        color: white !important;
+    }
+
+    .contact-panel textarea:focus {
+        background: rgba(255,255,255,0.1) !important;
+        border-color: #2563eb !important;
+    }
+
+    .purchase-panel {
+        background: white;
+        border-radius: var(--border-radius-lg);
+        border: 1px solid var(--slate-100);
+        padding: 32px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .purchase-panel h5 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-purchase {
+        width: 100%;
+        padding: 14px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #059669, #10b981);
+        border: none;
+        color: white;
+        transition: all 0.25s;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-purchase:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(5,150,105,0.35);
+        color: white;
+    }
+
+    .pending-notice {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: 0.85rem;
+        color: #92400e;
+        font-weight: 500;
+    }
+
+    .sold-notice {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: 0.85rem;
+        color: #475569;
+        font-weight: 600;
+    }
+</style>
+
+<div>
+    <a href="{% url 'buyer_dashboard' %}" class="back-link">
+        <i class="bi bi-arrow-left"></i> Back to Marketplace
+    </a>
+
+    <div class="row g-4">
+        <!-- LEFT: Vehicle Info -->
+        <div class="col-lg-7">
+            <!-- Gallery -->
+            <div class="gallery-box">
+                {% if ev.vehicle_image %}
+                    <img src="{{ ev.vehicle_image.url }}" alt="{{ ev.vehicle_model }}">
+                {% else %}
+                    <div class="no-img-placeholder">
+                        <i class="bi bi-car-front"></i>
+                        <span>No Image Available</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Main Details -->
+            <div class="detail-panel">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <div class="listing-id-badge">Listing #{{ ev.id|stringformat:"04d" }}</div>
+                        <h1 class="ev-title">{{ ev.display_name }}</h1>
+                        <p class="ev-subtitle">{{ ev.year }} Release &bull; EVTrust Verified Inventory</p>
+                    </div>
+                    <div class="price-area">
+                        <div class="price-label">Listed Price</div>
+                        <div class="price-value">₹{{ ev.price|floatformat:0 }}</div>
+                    </div>
+                </div>
+
+                <div class="specs-grid">
+                    <div class="spec-cell">
+                        <div class="spec-lbl">Manufacturer</div>
+                        <div class="spec-val">{{ ev.manufacturer }}</div>
+                    </div>
+                    <div class="spec-cell">
+                        <div class="spec-lbl">Year</div>
+                        <div class="spec-val">{{ ev.year }}</div>
+                    </div>
+                    <div class="spec-cell">
+                        <div class="spec-lbl">Mileage</div>
+                        <div class="spec-val">{{ ev.mileage }} mi</div>
+                    </div>
+                    <div class="spec-cell">
+                        <div class="spec-lbl">Battery Capacity</div>
+                        <div class="spec-val">{{ ev.battery_capacity }} kWh</div>
+                    </div>
+                </div>
+
+                {% if ev.description %}
+                <div>
+                    <h6 class="fw-700 mb-3" style="font-weight: 700; color: #0f172a; font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.06em;">Description</h6>
+                    <p class="description-text">{{ ev.description }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- RIGHT: Battery Report + Actions -->
+        <div class="col-lg-5">
+            <!-- Battery Diagnostic -->
+            <div class="battery-panel">
+                <div class="battery-panel-header">
+                    <h4><i class="bi bi-battery-charging me-2 text-primary"></i>Diagnostic Report</h4>
+                    {% if battery_data.prediction_status == 'completed' %}
+                        <span class="badge fw-bold px-3 py-2" style="background:#ecfdf5; color:#065f46; border-radius:8px; font-size:0.72rem;">
+                            <i class="bi bi-patch-check me-1"></i>Verified
+                        </span>
+                    {% elif battery_data %}
+                        <span class="badge fw-bold px-3 py-2" style="background:#fffbeb; color:#92400e; border-radius:8px; font-size:0.72rem;">
+                            Pending AI
+                        </span>
+                    {% else %}
+                        <span class="badge fw-bold px-3 py-2" style="background:#f1f5f9; color:#64748b; border-radius:8px; font-size:0.72rem;">
+                            No Data
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if battery_data %}
+                    {% if battery_data.prediction_status == 'completed' %}
+                        <div class="soh-display">
+                            <div class="soh-value">{{ battery_data.soh_prediction|floatformat:1 }}%</div>
+                            <div class="soh-label">Current State of Health</div>
+                        </div>
+                        <div class="rul-row">
+                            <span class="rul-lbl"><i class="bi bi-clock-history me-2"></i>Remaining Useful Life</span>
+                            <span class="rul-val">{{ battery_data.rul_prediction|floatformat:1 }} yrs</span>
+                        </div>
+
+                        {% if battery_data.soh_prediction > 80 %}
+                            <div class="health-verdict verdict-good">
+                                <strong>Excellent Status.</strong> Battery shows minimal degradation patterns.
+                            </div>
+                        {% elif battery_data.soh_prediction > 60 %}
+                            <div class="health-verdict verdict-warn">
+                                <strong>Moderate Status.</strong> Typical degradation for model age detected.
+                            </div>
+                        {% else %}
+                            <div class="health-verdict verdict-bad">
+                                <strong>Replacement Advisory.</strong> Potential end-of-life characteristics found.
+                            </div>
+                        {% endif %}
+
+                    {% else %}
+                        <div class="text-center py-4 rounded-3" style="background: #f8fafc;">
+                            <i class="bi bi-cpu text-primary mb-3 d-block" style="font-size: 2rem;"></i>
+                            <p class="text-muted mb-3 small fw-600">Diagnostic data ready for AI analysis.</p>
+                            <a href="{% url 'check_battery_health' ev.pk %}" class="btn btn-primary fw-bold px-4 rounded-pill">
+                                <i class="bi bi-play-circle me-2"></i>Run AI Prediction
+                            </a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-5" style="color: #cbd5e1;">
+                        <i class="bi bi-battery" style="font-size: 2.5rem; display: block; margin-bottom: 12px;"></i>
+                        <p class="mb-1" style="font-size: 0.88rem;">No battery telemetry data uploaded yet.</p>
+                        <small>Seller verification pending.</small>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Contact Seller -->
+            {% if user.role == 'buyer' %}
+            <div class="contact-panel">
+                <h5><i class="bi bi-envelope me-2 opacity-75"></i>Contact Seller</h5>
+                <p class="sub">Send a secure message to <strong style="opacity:0.75;">{{ ev.seller.name }}</strong> about this listing.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="d-block small fw-bold mb-2" style="opacity:0.5; text-transform:uppercase; letter-spacing:0.06em; font-size:0.72rem;">Your Message</label>
+                        {{ contact_form.message }}
+                    </div>
+                    <button type="submit" class="btn btn-info text-white fw-bold w-100 rounded-pill py-3">
+                        <i class="bi bi-send me-2"></i>Send Message
+                    </button>
+                </form>
+            </div>
+
+            <!-- Purchase Section -->
+            <div class="purchase-panel">
+                <h5>
+                    <i class="bi bi-bag-check-fill text-success"></i>
+                    Purchase This EV
+                </h5>
+
+                {% if ev.listing_status == 'sold' %}
+                    <div class="sold-notice">
+                        <i class="bi bi-check-circle me-2"></i>This EV has been sold and is no longer available.
+                    </div>
+                {% elif ev.listing_status == 'pending_sale' %}
+                    {% if existing_purchase_request %}
+                        <div class="pending-notice">
+                            <i class="bi bi-hourglass-split me-2"></i><strong>Your request is under review.</strong><br>
+                            <span style="font-size: 0.82rem; opacity: 0.8;">The admin will confirm or reject the transaction soon.</span>
+                        </div>
+                    {% else %}
+                        <div class="sold-notice">
+                            <i class="bi bi-lock me-2"></i>Another buyer's request is currently being reviewed.
+                        </div>
+                    {% endif %}
+                {% elif ev.listing_status == 'approved' %}
+                    {% if battery_data and battery_data.purchase_enabled %}
+                        {% if existing_purchase_request %}
+                            <div class="pending-notice" style="background:#ecfdf5; border-color:#a7f3d0; color:#065f46;">
+                                <i class="bi bi-check-circle-fill me-2"></i><strong>Purchase request submitted!</strong> Awaiting admin confirmation.
+                            </div>
+                        {% else %}
+                            <a href="{% url 'submit_purchase_request' ev.pk %}" class="btn-purchase">
+                                <i class="bi bi-cart-check-fill"></i>Proceed to Purchase
+                            </a>
+                            <p class="text-muted text-center small mt-2 mb-0" style="font-size: 0.78rem;">
+                                <i class="bi bi-shield-check text-success me-1"></i>Battery health verified — safe to proceed
+                            </p>
+                        {% endif %}
+                    {% else %}
+                        <button class="btn-purchase" style="background: #e2e8f0; color: #94a3b8; cursor: not-allowed;" disabled>
+                            <i class="bi bi-lock-fill"></i>Purchase Locked
+                        </button>
+                        <p class="text-muted text-center small mt-2 mb-0" style="font-size: 0.78rem;">
+                            {% if not battery_data %}
+                                No battery data uploaded yet.
+                            {% elif battery_data.prediction_status == 'pending' %}
+                                Run the AI health check first to unlock purchasing.
+                            {% elif battery_data.prediction_status == 'failed' %}
+                                Battery analysis failed. Contact the seller.
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

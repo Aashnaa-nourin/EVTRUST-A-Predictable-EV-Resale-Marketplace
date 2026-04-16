@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EVTrust — Verified EV Marketplace{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-rgb: 37, 99, 235;
+            --primary-light: #60a5fa;
+            --primary-dark: #1d4ed8;
+            --accent: #0ea5e9;
+            --accent-rgb: 14, 165, 233;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --dark-2: #1e293b;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --border-radius-sm: 8px;
+            --border-radius: 14px;
+            --border-radius-lg: 22px;
+            --shadow-sm: 0 1px 3px 0 rgba(0,0,0,.05), 0 1px 2px -1px rgba(0,0,0,.05);
+            --shadow: 0 4px 12px -1px rgba(0,0,0,.08), 0 2px 6px -2px rgba(0,0,0,.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-dark: rgba(15, 23, 42, 0.85);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--slate-50);
+            color: var(--slate-900);
+            padding-top: 88px; /* Adjusted for fixed-top navbar */
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: var(--glass-dark) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            height: 72px;
+            padding: 0 !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-brand {
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            font-size: 1.45rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .navbar-brand .ev-part {
+            color: #38bdf8;
+        }
+
+        .navbar-brand .trust-part {
+            color: #ffffff;
+        }
+
+        .navbar-brand .dot {
+            width: 6px;
+            height: 6px;
+            background: #38bdf8;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 2px;
+            margin-bottom: 10px;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.8); }
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.7) !important;
+            font-weight: 500;
+            font-size: 0.88rem;
+            padding: 8px 14px !important;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.01em;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #ffffff !important;
+            background: rgba(255,255,255,0.07);
+        }
+
+        .nav-link.active-nav {
+            color: #38bdf8 !important;
+        }
+
+        /* Profile Avatar Button */
+        .nav-avatar-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            letter-spacing: 0;
+        }
+
+        .nav-avatar-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 0 3px rgba(56,189,248,0.3);
+        }
+
+        .nav-avatar-dropdown .dropdown-menu {
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            background: #1e293b;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            padding: 8px;
+            min-width: 220px;
+            margin-top: 10px !important;
+        }
+
+        .nav-avatar-dropdown .dropdown-item {
+            color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-avatar-dropdown .dropdown-item:hover {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+
+        .nav-avatar-dropdown .dropdown-divider {
+            border-color: rgba(255,255,255,0.08);
+            margin: 6px 0;
+        }
+
+        .nav-avatar-dropdown .dropdown-header {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 8px 14px 4px;
+        }
+
+        .btn-nav-logout {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+            color: #fca5a5 !important;
+        }
+
+        .btn-nav-logout:hover {
+            background: rgba(239,68,68,0.2) !important;
+            color: #fca5a5 !important;
+        }
+
+        .btn-nav-register {
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            color: #fff !important;
+            font-weight: 700 !important;
+            font-size: 0.85rem !important;
+            padding: 8px 18px !important;
+            border-radius: 10px;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-nav-register:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(37,99,235,0.4);
+            color: #fff !important;
+        }
+
+        /* ===== GLOBAL ELEMENTS ===== */
+        .card {
+            border-radius: 18px;
+            border: 1px solid var(--slate-200);
+        }
+
+        .btn {
+            border-radius: 10px;
+            padding: 10px 24px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+            letter-spacing: 0.01em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border: none;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37,99,235,0.35);
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669, #10b981);
+            border: none;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5,150,105,0.35);
+        }
+
+        input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+            width: 100% !important;
+            padding: 14px 18px !important;
+            border-radius: var(--border-radius) !important;
+            border: 1.5px solid var(--slate-200) !important;
+            background-color: #ffffff !important;
+            font-size: 0.95rem !important;
+            font-family: 'Inter', sans-serif !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            color: var(--slate-900) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02) inset !important;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.12) !important;
+            transform: translateY(-1px);
+        }
+
+        /* ===== ALERT MESSAGES ===== */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 14px 18px;
+        }
+
+        .alert-success { background: #ecfdf5; color: #065f46; }
+        .alert-danger { background: #fef2f2; color: #991b1b; }
+        .alert-warning { background: #fffbeb; color: #92400e; }
+        .alert-info { background: #eff6ff; color: #1e40af; }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* ===== PAGE FADE IN ===== */
+        .page-content {
+            animation: pageFadeIn 0.4s ease;
+        }
+
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <span class="ev-part">EV</span><span class="trust-part">Trust</span><span class="dot"></span>
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-label="Toggle navigation" style="color: rgba(255,255,255,0.7);">
+            <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center gap-1">
+                {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                                <i class="bi bi-shield-check me-1"></i>Admin Panel
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin_inbox' %}">
+                                <i class="bi bi-envelope me-1"></i>Inbox
+                            </a>
+                        </li>
+                    {% elif user.role == 'seller' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'seller_dashboard' %}">
+                                <i class="bi bi-grid me-1"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'seller_ev_list' %}">
+                                <i class="bi bi-car-front me-1"></i>My Listings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'seller_inbox' %}">
+                                <i class="bi bi-envelope me-1"></i>Inbox
+                            </a>
+                        </li>
+                    {% elif user.role == 'buyer' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'buyer_dashboard' %}">
+                                <i class="bi bi-search me-1"></i>Marketplace
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'battery_health_center' %}">
+                                <i class="bi bi-battery-charging me-1"></i>Battery IQ
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <!-- Profile Dropdown -->
+                    <li class="nav-item dropdown nav-avatar-dropdown ms-2">
+                        <button class="nav-avatar-btn dropdown-toggle" data-bs-toggle="dropdown"
+                                aria-expanded="false" id="profileDropdown"
+                                style="background: none; border: none; padding: 0;">
+                            <div class="nav-avatar-btn">
+                                {{ user.name|slice:":1"|upper }}
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><h6 class="dropdown-header">Signed in as</h6></li>
+                            <li>
+                                <span class="dropdown-item disabled" style="opacity: 1; cursor: default;">
+                                    <i class="bi bi-person-circle text-muted"></i>
+                                    <div>
+                                        <div class="fw-700 text-white" style="font-weight: 700; font-size: 0.9rem;">{{ user.name }}</div>
+                                        <div style="font-size: 0.78rem; color: rgba(255,255,255,0.4);">{{ user.email }}</div>
+                                    </div>
+                                </span>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'edit_profile' %}">
+                                    <i class="bi bi-pencil-square text-sky-400" style="color: #38bdf8;"></i>
+                                    Edit Profile
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item btn-nav-logout" href="{% url 'logout' %}">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    Sign Out
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Sign In</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="nav-link btn-nav-register" href="{% url 'register' %}">Get Started</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mb-5 page-content" style="padding-top: 32px;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2"></i>{% endif %}
+                {% if message.tags == 'danger' or message.tags == 'error' %}<i class="bi bi-exclamation-triangle-fill me-2"></i>{% endif %}
+                {% if message.tags == 'warning' %}<i class="bi bi-exclamation-circle-fill me-2"></i>{% endif %}
+                {% if message.tags == 'info' %}<i class="bi bi-info-circle-fill me-2"></i>{% endif %}
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+</div>
+
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Auto-dismiss alerts after 5 seconds
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+            document.querySelectorAll('.alert').forEach(function (alert) {
+                var bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    });
+</script>
+</body>
+</html>
