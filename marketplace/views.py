@@ -265,8 +265,13 @@ def buyer_dashboard(request):
         queryset = queryset.filter(price__gte=min_price)
     if max_price:
         queryset = queryset.filter(price__lte=max_price)
+
+    # 4. Year Filter
+    year = request.GET.get('year')
+    if year:
+        queryset = queryset.filter(year=year)
         
-    # 4. SOH Filter (Minimum SOH)
+    # 5. SOH Filter (Minimum SOH)
     # This requires looking at the LATEST BatteryData for each EV
     min_soh = request.GET.get('min_soh')
     
@@ -285,8 +290,9 @@ def buyer_dashboard(request):
         except ValueError:
             pass
 
-    # Get dynamic list of manufacturers for the dropdown
+    # Get dynamic list of manufacturers and years for the dropdowns
     manufacturers = EVListing.objects.filter(listing_status='approved').values_list('manufacturer', flat=True).distinct().order_by('manufacturer')
+    years = EVListing.objects.filter(listing_status='approved').values_list('year', flat=True).distinct().order_by('-year')
     
     unread_messages = Message.objects.filter(receiver=request.user, is_read=False).count()
     
@@ -306,6 +312,7 @@ def buyer_dashboard(request):
         'listings': queryset,
         'unread_messages_count': unread_messages,
         'manufacturers': manufacturers,
+        'years': years,
         'current_filters': request.GET,
         'purchased_evs': purchased_evs,
         'pending_purchases': pending_purchases,

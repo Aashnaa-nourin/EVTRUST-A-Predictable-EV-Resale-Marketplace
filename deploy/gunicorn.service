@@ -1,0 +1,16 @@
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/EVTRUST-A-Predictable-EV-Resale-Marketplace
+ExecStart=/home/ubuntu/EVTRUST-A-Predictable-EV-Resale-Marketplace/venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          evtrust.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
